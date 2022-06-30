@@ -1,11 +1,56 @@
+# Need to Find a way to able to create value for multiple output, it will be a waste to create a new graph for each output
+# For now only support for one output
+
+import numpy as np
+from derivationRules import Rules
+
+class Evaluate():
+    @staticmethod
+    def add(node : "Expression"):
+        # add value of the input (from)
+        node.val = node.conn[0][0].val + node.conn[0][1].val
+        
+    @staticmethod
+    def sub(node : "Expression"):
+        # add value of the input (from)
+        node.val = node.conn[0][0].val - node.conn[0][1].val
+    
+    @staticmethod
+    def mul(node : "Expression"):
+        # add value of the input (from)
+        node.val = node.conn[0][0].val * node.conn[0][1].val
+        
+    @staticmethod
+    def div(node : "Expression"):
+        # add value of the input (from)
+        node.val = node.conn[0][0].val / node.conn[0][1].val
+        
+    @staticmethod
+    def pow(node : "Expression"):
+        node.val = node.conn[0][0].val ** node.param
+        
+   
 class Expression:
-    def __init__(self, operation_id : int, connection : list["Expression"] = [], value : float = None, extra_param : int = None) -> None:
+    def __init__(self, operation_id : int, dRules : function, evalFunc : function, connection : list[list["Expression"]] = [[], []], value : float = None, extra_param : int = None) -> None:
+        # connection is a 2D array. 0th index = From and 1th index = To
         # Extra param only accessed by a specific function such as power and general logartihm and exponent
         self.op = operation_id
         self.conn = connection
-        self.val = value
+        self.val = value # used when calculating the partial derivatives
         self.param = extra_param
+        self.derivativeRules = dRules # used to calculate the derivatives
+        self.eval = evalFunc # used to evaluate the node value
 
+    @classmethod
+    def constant(cls, value : float) -> "Expression":
+        """Create a constant
+
+        Returns:
+            Expression: Constant Expression
+        """
+        
+        return cls(-1, value = value)
+    
     @classmethod
     def variable(cls) -> "Expression":
         """Create a variable expression     
@@ -16,13 +61,13 @@ class Expression:
         return cls(0)
 
     @classmethod
-    def function(cls, operation_id : int, connection : list["Expression"]) -> "Expression":
+    def function(cls, operation_id : int, connection : list[list["Expression"]]) -> "Expression":
         """Create a function expression node    
         Args:
-            operation_id (int): (1 = Addition, 2 = Subtraction, 3 = Multiplication,4 = Division,
-            5 = Power (x ** (0.5), x ** (2)),6 = Exponent (e^x),
+            operation_id (int): (1 = Addition, 2 = Subtraction, 3 = Multiplication, 4 = Division,
+            5 = Power (x ** (0.5), x ** (2)), 6 = Exponent (e^x),
             7 = Natural Logarithm (ln(x) / log_e (x)),
-            8 = Sin ,9 = Cos,10 = Tan,11 = Absolute Value)
+            8 = Sin, 9 = Cos,10 = Tan, 11 = asin, 12 = acos, 13 = atan, 14 = abs)
             connection (list[Expression]): The function input expression
 
         Returns:
@@ -41,14 +86,14 @@ class Expression:
             Expression: Expression node that represent the operation
         """
 
-        # Create a new node with operation add that connect to node a
-        func_node = cls.function(op_id, [a])
-        a.conn.append(func_node)
+        # Create a new node with operation add that connect to node a. New Node Will From A. a will go to new Node
+        func_node = cls.function(op_id, [[a], []]) # put a in from array
+        a.conn[1].append(func_node) # Put in in to array
         
         # If exist another input
         if b != None:
-            func_node.conn.append(b)
-            b.conn.append(func_node)    
+            func_node.conn[0].append(b) # new Node also from b
+            b.conn[1].append(func_node) # add new node in to conn in b  
             
         return func_node    
     
@@ -91,8 +136,20 @@ class Expression:
         return cls.__operation(a, 10)
     
     @classmethod
-    def abs(cls, a : "Expression") -> "Expression":
+    def asin(cls, a : "Expression") -> "Expression":
         return cls.__operation(a, 11)
+    
+    @classmethod
+    def acos(cls, a : "Expression") -> "Expression":
+        return cls.__operation(a, 12)
+    
+    @classmethod
+    def atan(cls, a : "Expression") -> "Expression":
+        return cls.__operation(a, 13)
+    
+    @classmethod
+    def abs(cls, a : "Expression") -> "Expression":
+        return cls.__operation(a, 14)
 
 
 
@@ -102,5 +159,5 @@ if __name__ == "__main__":
     y = Expression.variable()
     
     # create an function equation
-    expr = Expression.sin(x + x*(y ** 2)) + Expression.cos(x * y)
+    expr = Expression.sin(x + x*(y ** 2)) + Expression.cos(x * y) + Expression.constant(5)
     print(expr)
