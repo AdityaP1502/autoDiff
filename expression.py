@@ -1,8 +1,10 @@
 class Expression:
-    def __init__(self, operation_id : int, connection : list["Expression"] = [], value : float = None) -> None:
+    def __init__(self, operation_id : int, connection : list["Expression"] = [], value : float = None, extra_param : int = None) -> None:
+        # Extra param only accessed by a specific function such as power and general logartihm and exponent
         self.op = operation_id
         self.conn = connection
         self.val = value
+        self.param = extra_param
 
     @classmethod
     def variable(cls) -> "Expression":
@@ -29,7 +31,7 @@ class Expression:
 
         return cls(operation_id, connection)
 
-    def __operation(self, op_id : int, b : "Expression" = None) -> "Expression":
+    def __operation(self, op_id : int, b : "Expression" = None, extra_param = None) -> "Expression":
         """Create an operation node and update the input connection to include the new operation node   
         Args:
             b (Expression): other expression 
@@ -51,45 +53,53 @@ class Expression:
     
     # Basic Arithmetic Operation 
     def __add__(self, b : "Expression") -> "Expression":
-        return self.__operation(self, b, 1)
+        return self.__operation(1, b)
 
     def __sub__(self, b : "Expression") -> "Expression":
-        return self.__operation(self, b, 2)
+        return self.__operation(2, b)
 
     def __mul__(self, b : "Expression") -> "Expression":
-        return self.__operation(self, b, 3)
+        return self.__operation(3, b)
 
     def __truediv__(self, b : "Expression") -> "Expression":
-        return self.__operation(self, b, 4)
+        return self.__operation(4, b)
     
-    def __pow__(self, b : "Expression") -> "Expression":
-        return self.__operation(self, b, 5)
+    def __pow__(self, b : float) -> "Expression":
+        # extra param to store the power 
+        return self.__operation(5, extra_param = b)
     
     # Math Function
     @classmethod 
     def exponent(cls, a : "Expression") -> "Expression":
-        return cls.__operation(a, 6)
+        return cls.__operation(6, a)
     
     @classmethod
     def ln(cls, a : "Expression") -> "Expression":
-        return cls.__operation(a, 7)
+        return cls.__operation(7, a)
     
     @classmethod
     def sin(cls, a : "Expression") -> "Expression":
-        return cls.__operation(a, 8)
+        return cls.__operation(8, a)
     
     @classmethod
     def cos(cls, a : "Expression") -> "Expression":
-        return cls.__operation(a, 9)
+        return cls.__operation(9, a)
     
     @classmethod
     def tan(cls, a : "Expression") -> "Expression":
-        return cls.__operation(a, 10)
+        return cls.__operation(10, a)
     
     @classmethod
     def abs(cls, a : "Expression") -> "Expression":
-        return cls.__operation(a, 11)
+        return cls.__operation(11, a)
 
 
 
-        
+if __name__ == "__main__":
+    # initialize a variable
+    x = Expression.variable()
+    y = Expression.variable()
+    
+    # create an function equation
+    expr = x + x*(y ** 2)
+    print(expr)
