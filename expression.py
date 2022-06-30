@@ -31,7 +31,8 @@ class Expression:
 
         return cls(operation_id, connection)
 
-    def __operation(self, op_id : int, b : "Expression" = None, extra_param = None) -> "Expression":
+    @classmethod
+    def __operation(cls, a : "Expression", op_id : int, b : "Expression" = None, extra_param = None) -> "Expression":
         """Create an operation node and update the input connection to include the new operation node   
         Args:
             b (Expression): other expression 
@@ -41,8 +42,8 @@ class Expression:
         """
 
         # Create a new node with operation add that connect to node a
-        func_node = self.function(op_id, [self])
-        self.conn.append(func_node)
+        func_node = cls.function(op_id, [a])
+        a.conn.append(func_node)
         
         # If exist another input
         if b != None:
@@ -53,20 +54,20 @@ class Expression:
     
     # Basic Arithmetic Operation 
     def __add__(self, b : "Expression") -> "Expression":
-        return self.__operation(1, b)
+        return self.__operation(self, 1, b)
 
     def __sub__(self, b : "Expression") -> "Expression":
-        return self.__operation(2, b)
+        return self.__operation(self, 2, b)
 
     def __mul__(self, b : "Expression") -> "Expression":
-        return self.__operation(3, b)
+        return self.__operation(self, 3, b)
 
     def __truediv__(self, b : "Expression") -> "Expression":
-        return self.__operation(4, b)
+        return self.__operation(self, 4, b)
     
     def __pow__(self, b : float) -> "Expression":
         # extra param to store the power 
-        return self.__operation(5, extra_param = b)
+        return self.__operation(self, 5, extra_param = b)
     
     # Math Function
     @classmethod 
@@ -101,5 +102,5 @@ if __name__ == "__main__":
     y = Expression.variable()
     
     # create an function equation
-    expr = Expression.abs(x + x*(y ** 2))
+    expr = Expression.sin(x + x*(y ** 2)) + Expression.cos(x * y)
     print(expr)
