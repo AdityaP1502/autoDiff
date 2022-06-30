@@ -71,27 +71,27 @@ class Expression:
     # Math Function
     @classmethod 
     def exponent(cls, a : "Expression") -> "Expression":
-        return cls.__operation(6, a)
+        return cls.__operation(a, 6)
     
     @classmethod
     def ln(cls, a : "Expression") -> "Expression":
-        return cls.__operation(7, a)
+        return cls.__operation(a, 7)
     
     @classmethod
     def sin(cls, a : "Expression") -> "Expression":
-        return cls.__operation(8, a)
+        return cls.__operation(a, 8)
     
     @classmethod
     def cos(cls, a : "Expression") -> "Expression":
-        return cls.__operation(9, a)
+        return cls.__operation(a, 9)
     
     @classmethod
     def tan(cls, a : "Expression") -> "Expression":
-        return cls.__operation(10, a)
+        return cls.__operation(a, 10)
     
     @classmethod
     def abs(cls, a : "Expression") -> "Expression":
-        return cls.__operation(11, a)
+        return cls.__operation(a, 11)
 
 
 
@@ -101,5 +101,5 @@ if __name__ == "__main__":
     y = Expression.variable()
     
     # create an function equation
-    expr = x + x*(y ** 2)
+    expr = Expression.abs(x + x*(y ** 2))
     print(expr)
