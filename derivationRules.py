@@ -14,7 +14,8 @@ class Rules():
             
         else:
             NotImplemented
-    
+            
+    @staticmethod
     def sub(method : str, isPositive : bool) -> int:
         if method == "reverse":
             return 1 if isPositive else -1
@@ -24,7 +25,8 @@ class Rules():
             
         else:
             NotImplemented
-    
+            
+    @staticmethod
     def mul(method : str, other_input_val : float) -> float:
         """n_i = n_j * n_k
 
@@ -45,6 +47,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def div(method : str, isNumerator : bool, from_node_val : list[int]):
         # numerator = 0, denominator = 1
         numenVal, denomVal = from_node_val
@@ -58,6 +61,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def pow(method : str, power : int, from_node_val):
         if method == "reverse":
             return power * from_node_val ** (power - 1)
@@ -68,6 +72,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def exponent(method : str, node_val : float):
         if method == "reverse":
             return node_val
@@ -78,6 +83,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def ln(method : str, from_node_val : float):
         if method == "reverse":
             return 1 / from_node_val
@@ -87,7 +93,8 @@ class Rules():
             
         else:
             NotImplemented
-        
+            
+    @staticmethod    
     def sin(method : str, from_node_val : float):
         if method == "reverse":
             return np.cos(from_node_val)
@@ -98,6 +105,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def cos(method : str, from_node_val : float):
         if method == "reverse":
             return -1 * (np.sin(from_node_val))
@@ -108,6 +116,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def tan(method : str, from_node_val : float):
         if method == "reverse":
             return (1 / np.cos(from_node_val)) ** 2
@@ -117,7 +126,7 @@ class Rules():
             
         else:
             NotImplemented
-            
+    @staticmethod        
     def asin(method : str, from_node_val : float):
         if method == "reverse":
             return 1 / np.sqrt(1 - from_node_val ** 2)
@@ -128,6 +137,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def acos(method : str, from_node_val : float):
         if method == "reverse":
             return -1 * (1 / np.sqrt(1 - from_node_val ** 2))
@@ -138,6 +148,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def atan(method : str, from_node_val : float):
         if method == "reverse":
             return 1 / (1 + from_node_val ** 2)
@@ -148,6 +159,7 @@ class Rules():
         else:
             NotImplemented
             
+    @staticmethod        
     def abs(method : str, from_node_val : float):
         if method == "reverse":
             if from_node_val == 0:
