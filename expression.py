@@ -1,68 +1,7 @@
 # Need to Find a way to able to create value for multiple output, it will be a waste to create a new graph for each output
 # For now only support for one output
-from derivationRules import Rules, np
+from evaluate import Rules, Evaluate
 
-class Evaluate():
-    @staticmethod
-    def add(node : "Expression") -> None:
-        # add value of the input (from)
-        node.val = node.conn[0][0].val + node.conn[0][1].val
-        
-    @staticmethod
-    def sub(node : "Expression") -> None:
-        # subtract value of the input (from)
-        node.val = node.conn[0][0].val - node.conn[0][1].val
-    
-    @staticmethod
-    def mul(node : "Expression") -> None:
-        # multiply value of the input (from)
-        node.val = node.conn[0][0].val * node.conn[0][1].val
-        
-    @staticmethod
-    def div(node : "Expression") -> None:
-        # divide value of the input (from)
-        node.val = node.conn[0][0].val / node.conn[0][1].val
-        
-    @staticmethod
-    def pow(node : "Expression") -> None:
-        node.val = node.conn[0][0].val ** node.param
-        
-    @staticmethod
-    def exponent(node : "Expression", x : float) -> None:
-        node.val = np.e ** (x)
-        
-    @staticmethod
-    def ln(node : "Expression", x : float) -> None:
-        node.val = np.log(x)
-        
-    @staticmethod
-    def sin(node : "Expression", x : float) -> None:
-        node.val = np.sin(x)
-        
-    @staticmethod
-    def cos(node : "Expression", x : float) -> None:
-        node.val = np.cos(x)
-      
-    @staticmethod
-    def tan(node : "Expression", x : float) -> None:
-        node.val = np.tan(x)
-        
-    @staticmethod
-    def asin(node : "Expression", x : float) -> None:
-        node.val = np.arcsin(x)
-    
-    @staticmethod   
-    def acos(node : "Expression", x : float) -> None:
-        node.val = np.arccos(x)
-        
-    @staticmethod    
-    def atan(node : "Expression", x : float) -> None:
-        node.val = np.arctan(x)
-        
-    @staticmethod    
-    def abs(node : "Expression", x : float) -> None:
-        node.val = np.abs(x)
-        
 class Expression:
     def __init__(self, operation_id : int, dRules : "function" = None, evalFunc  : "function" = None, connection : list[list["Expression"]] = [[], []], value : float = None, extra_param : int = None) -> None:
         # connection is a 2D array. 0th index = From and 1th index = To
