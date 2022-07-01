@@ -64,7 +64,7 @@ class Evaluate():
         node.val = np.abs(x)
         
 class Expression:
-    def __init__(self, operation_id : int, dRules : function = None, evalFunc  : function = None, connection : list[list["Expression"]] = [[], []], value : float = None, extra_param : int = None) -> None:
+    def __init__(self, operation_id : int, dRules : "function" = None, evalFunc  : "function" = None, connection : list[list["Expression"]] = [[], []], value : float = None, extra_param : int = None) -> None:
         # connection is a 2D array. 0th index = From and 1th index = To
         # Extra param only accessed by a specific function such as power and general logartihm and exponent
         self.op = operation_id
@@ -94,7 +94,7 @@ class Expression:
         return cls(0)
 
     @classmethod
-    def function(cls, operation_id : int, connection : list[list["Expression"]], evalFunc : function, dRules : function) -> "Expression":
+    def function(cls, operation_id : int, connection : list[list["Expression"]], evalFunc : "function", dRules : "function") -> "Expression":
         """Create a function expression node    
         Args:
             operation_id (int): (1 = Addition, 2 = Subtraction, 3 = Multiplication, 4 = Division,
@@ -110,7 +110,7 @@ class Expression:
         return cls(operation_id, dRules, evalFunc, connection)
 
     @classmethod
-    def __operation(cls, a : "Expression", op_id : int, evalFunc : function, dRules : function, b : "Expression" = None, extra_param = None, ) -> "Expression":
+    def __operation(cls, a : "Expression", op_id : int, evalFunc : "function", dRules : "function", b : "Expression" = None, extra_param = None, ) -> "Expression":
         """Create an operation node and update the input connection to include the new operation node   
         Args:
             b (Expression): other expression 
@@ -120,7 +120,7 @@ class Expression:
         """
 
         # Create a new node with operation add that connect to node a. New Node Will From A. a will go to new Node
-        func_node = cls.function(op_id, dRules, evalFunc, [[a], []]) # put a in from array
+        func_node = cls.function(operation_id = op_id, dRules = dRules, evalFunc = evalFunc, connection=[[a], []]) # put a in from array
         a.conn[1].append(func_node) # Put in in to array
         
         # If exist another input
@@ -132,85 +132,85 @@ class Expression:
     
     # Basic Arithmetic Operation 
     def __add__(self, b : "Expression") -> "Expression":
-        evalFnc = Evaluate.add()
-        dRules = Rules.add()
+        evalFnc = Evaluate.add
+        dRules = Rules.add
         return self.__operation(self, 1, evalFnc, dRules, b)
 
     def __sub__(self, b : "Expression") -> "Expression":
-        evalFnc = Evaluate.sub()
-        dRules = Rules.sub()
+        evalFnc = Evaluate.sub
+        dRules = Rules.sub
         return self.__operation(self, 2, evalFnc, dRules, b)
 
     def __mul__(self, b : "Expression") -> "Expression":
-        evalFnc = Evaluate.mul()
-        dRules = Rules.mul()
+        evalFnc = Evaluate.mul
+        dRules = Rules.mul
         return self.__operation(self, 3, evalFnc, dRules, b)
 
     def __truediv__(self, b : "Expression") -> "Expression":
-        evalFnc = Evaluate.div()
-        dRules = Rules.div()
+        evalFnc = Evaluate.div
+        dRules = Rules.div
         return self.__operation(self, 4, evalFnc, dRules, b)
     
     def __pow__(self, b : float) -> "Expression":
         # extra param to store the power 
-        evalFnc = Evaluate.pow()
-        dRules = Rules.pow()
+        evalFnc = Evaluate.pow
+        dRules = Rules.pow
         return self.__operation(self, 5, evalFnc, dRules, extra_param = b)
     
     # Math Function
     @classmethod 
     def exponent(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.exponent()
-        dRules = Rules.exponent()
-        return cls.__operation(a,evalFnc, dRules)
+        evalFnc = Evaluate.exponent
+        dRules = Rules.exponent
+        return cls.__operation(a, 6, evalFnc, dRules)
     
     @classmethod
     def ln(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.ln()
-        dRules = Rules.ln()
-        return cls.__operation(a, evalFnc, dRules)
+        evalFnc = Evaluate.ln
+        dRules = Rules.ln
+        return cls.__operation(a, 7, evalFnc, dRules)
     
     @classmethod
     def sin(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.sin()
-        dRules = Rules.sin()
-        return cls.__operation(a, evalFnc, dRules)
+        evalFnc = Evaluate.sin
+        dRules = Rules.sin
+        return cls.__operation(a, 8, evalFnc, dRules)
     
     @classmethod
     def cos(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.cos()
-        dRules = Rules.cos()
-        return cls.__operation(a, evalFnc, dRules)
+        evalFnc = Evaluate.cos
+        dRules = Rules.cos
+        return cls.__operation(a, 9, evalFnc, dRules)
     
     @classmethod
     def tan(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.tan()
-        dRules = Rules.tan()
-        return cls.__operation(a, 1, evalFnc, dRules)
+        evalFnc = Evaluate.tan
+        dRules = Rules.tan
+        return cls.__operation(a, 10, evalFnc, dRules)
     
     @classmethod
     def asin(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.asin()
-        dRules = Rules.asin()
-        return cls.__operation(a, 1, evalFnc, dRules)
+        evalFnc = Evaluate.asin
+        dRules = Rules.asin
+        return cls.__operation(a, 11, evalFnc, dRules)
     
     @classmethod
     def acos(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.acos()
-        dRules = Rules.acos()
-        return cls.__operation(a, 1, evalFnc, dRules)
+        evalFnc = Evaluate.acos
+        dRules = Rules.acos
+        return cls.__operation(a, 12, evalFnc, dRules)
     
     @classmethod
     def atan(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.atan()
-        dRules = Rules.atan()
-        return cls.__operation(a, 1, evalFnc, dRules)
+        evalFnc = Evaluate.atan
+        dRules = Rules.atan
+        return cls.__operation(a, 13, evalFnc, dRules)
     
     @classmethod
     def abs(cls, a : "Expression") -> "Expression":
-        evalFnc = Evaluate.abs()
-        dRules = Rules.abs()
-        return cls.__operation(a, 1, evalFnc, dRules)
+        evalFnc = Evaluate.abs
+        dRules = Rules.abs
+        return cls.__operation(a, 14, evalFnc, dRules)
 
 
 
