@@ -6,22 +6,22 @@ from derivationRules import Rules
 
 class Evaluate():
     @staticmethod
-    def add(node : "Expression"):
+    def add(node : "Expression") -> float:
         # add value of the input (from)
         node.val = node.conn[0][0].val + node.conn[0][1].val
         
     @staticmethod
-    def sub(node : "Expression"):
+    def sub(node : "Expression") -> float:
         # add value of the input (from)
         node.val = node.conn[0][0].val - node.conn[0][1].val
     
     @staticmethod
-    def mul(node : "Expression"):
+    def mul(node : "Expression") -> float:
         # add value of the input (from)
         node.val = node.conn[0][0].val * node.conn[0][1].val
         
     @staticmethod
-    def div(node : "Expression"):
+    def div(node : "Expression") -> float:
         # add value of the input (from)
         node.val = node.conn[0][0].val / node.conn[0][1].val
         
@@ -29,9 +29,44 @@ class Evaluate():
     def pow(node : "Expression"):
         node.val = node.conn[0][0].val ** node.param
         
-   
+    @staticmethod
+    def exponent(node : "Expression", x : float):
+        node.val = np.e ** (x)
+        
+    @staticmethod
+    def ln(node : "Expression", x : float):
+        node.val = np.log(x)
+        
+    @staticmethod
+    def sin(node : "Expression", x : float):
+        node.val = np.sin(x)
+        
+    @staticmethod
+    def cos(node : "Expression", x : float):
+        node.val = np.cos(x)
+      
+    @staticmethod
+    def tan(node : "Expression", x : float):
+        node.val = np.tan(x)
+        
+    @staticmethod
+    def asin(node : "Expression", x : float):
+        node.val = np.arcsin(x)
+    
+    @staticmethod   
+    def acos(node : "Expression", x : float):
+        node.val = np.arccos(x)
+        
+    @staticmethod    
+    def atan(node : "Expression", x : float):
+        node.val = np.arctan(x)
+        
+    @staticmethod    
+    def abs(node : "Expression", x : float):
+        node.val = np.abs(x)
+        
 class Expression:
-    def __init__(self, operation_id : int, dRules : function, evalFunc : function, connection : list[list["Expression"]] = [[], []], value : float = None, extra_param : int = None) -> None:
+    def __init__(self, operation_id : int, dRules : function = None, evalFunc  : function = None, connection : list[list["Expression"]] = [[], []], value : float = None, extra_param : int = None) -> None:
         # connection is a 2D array. 0th index = From and 1th index = To
         # Extra param only accessed by a specific function such as power and general logartihm and exponent
         self.op = operation_id
@@ -61,7 +96,7 @@ class Expression:
         return cls(0)
 
     @classmethod
-    def function(cls, operation_id : int, connection : list[list["Expression"]]) -> "Expression":
+    def function(cls, operation_id : int, connection : list[list["Expression"]], evalFunc : function, dRules : function) -> "Expression":
         """Create a function expression node    
         Args:
             operation_id (int): (1 = Addition, 2 = Subtraction, 3 = Multiplication, 4 = Division,
@@ -74,10 +109,10 @@ class Expression:
             Expression: Function Expression
         """
 
-        return cls(operation_id, connection)
+        return cls(operation_id, dRules, evalFunc, connection)
 
     @classmethod
-    def __operation(cls, a : "Expression", op_id : int, b : "Expression" = None, extra_param = None) -> "Expression":
+    def __operation(cls, a : "Expression", op_id : int, evalFunc : function, dRules : function, b : "Expression" = None, extra_param = None, ) -> "Expression":
         """Create an operation node and update the input connection to include the new operation node   
         Args:
             b (Expression): other expression 
@@ -87,7 +122,7 @@ class Expression:
         """
 
         # Create a new node with operation add that connect to node a. New Node Will From A. a will go to new Node
-        func_node = cls.function(op_id, [[a], []]) # put a in from array
+        func_node = cls.function(op_id, dRules, evalFunc, [[a], []]) # put a in from array
         a.conn[1].append(func_node) # Put in in to array
         
         # If exist another input
