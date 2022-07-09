@@ -64,9 +64,10 @@ class Evaluate():
 class Rules():
     """Derivative Rules. 
     For Reveres Method : Rules Function Evaluate dn_i / dn_j where n_i is the to node and n_j is the from node.
+    extra_param format : [from_idx, node_val, from_node_0_val, from_node_1_val, node.param]
     """
     @staticmethod
-    def add(method : str, extra_param : any) -> int:
+    def add(method : str, extra_param : list[float]) -> float:
         if method == "reverse":
             return 1
         
@@ -77,11 +78,11 @@ class Rules():
             NotImplemented
             
     @staticmethod
-    def sub(method : str, extra_param : any) -> int:
-        isPositive = extra_param[0]
+    def sub(method : str, extra_param : list[float]) -> float:
+        isNegative = extra_param[0] # if from_idx = 0 -> positive, from_idx = 1 -> negative
         
         if method == "reverse":
-            return 1 if isPositive else -1
+            return -1 if isNegative else 1
         
         elif method == "forward":
             NotImplemented
@@ -90,8 +91,8 @@ class Rules():
             NotImplemented
             
     @staticmethod
-    def mul(method : str, extra_param : any) -> float:
-        other_input_val = extra_param[0]
+    def mul(method : str, extra_param : list[float]) -> float:
+        other_input_val = extra_param[3 - extra_param[0]]
         
         if method == "reverse":
             return other_input_val
@@ -103,14 +104,13 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def div(method : str, extra_param : any) -> float:
-        isNumerator, from_node_val =  extra_param[:2]
+    def div(method : str, extra_param : list[float]) -> float:
+        # numerator = 0, denominator = 1 -> index in from conn
         
-        # numerator = 0, denominator = 1
-        numenVal, denomVal = from_node_val
+        isDenominator, numenVal, denomVal =  extra_param[0], extra_param[2], extra_param[3]
         
         if method == "reverse":
-            return 1 / denomVal if isNumerator else -1 * (numenVal / (denomVal ** 2))
+            return -1 * (numenVal / (denomVal ** 2)) if isDenominator else 1 / denomVal
         
         elif method == "forward":
             NotImplemented
@@ -119,8 +119,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def pow(method : str, extra_param : any) -> float:
-        power, from_node_val = extra_param[:2]
+    def pow(method : str, extra_param : list[float]) -> float:
+        power, from_node_val = extra_param[-1], extra_param[2]
         
         if method == "reverse":
             return power * from_node_val ** (power - 1)
@@ -132,8 +132,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def exponent(method : str, extra_param : any) -> float:
-        node_val = extra_param[0]
+    def exponent(method : str, extra_param : list[float]) -> float:
+        node_val = extra_param[1]
         
         if method == "reverse":
             return node_val
@@ -145,8 +145,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def ln(method : str, extra_param : any) -> float:
-        from_node_val = extra_param[0]
+    def ln(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[3]
         if method == "reverse":
             return 1 / from_node_val
         
@@ -157,8 +157,8 @@ class Rules():
             NotImplemented
             
     @staticmethod    
-    def sin(method : str, extra_param : any) -> float:
-        from_node_val = extra_param[0]
+    def sin(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[3]
         if method == "reverse":
             return np.cos(from_node_val)
         
@@ -169,8 +169,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def cos(method : str, extra_param : any) -> float:
-        from_node_val = extra_param[0]
+    def cos(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[2]
         if method == "reverse":
             return -1 * (np.sin(from_node_val))
         
@@ -181,8 +181,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def tan(method : str, extra_param : any) -> float:
-        from_node_val = extra_param[0]
+    def tan(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[2]
         if method == "reverse":
             return (1 / np.cos(from_node_val)) ** 2
         
@@ -193,8 +193,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def asin(method : str, extra_param : any) -> float:
-        from_node_val = extra_param[0]
+    def asin(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[2]
         if method == "reverse":
             return 1 / np.sqrt(1 - from_node_val ** 2)
         
@@ -205,8 +205,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def acos(method : str, extra_param : any) -> float:
-        from_node_val = extra_param[0]
+    def acos(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[2]
         if method == "reverse":
             return -1 * (1 / np.sqrt(1 - from_node_val ** 2))
         
@@ -217,8 +217,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def atan(method : str, extra_param : any) -> float:
-        from_node_val = extra_param[0]
+    def atan(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[2]
         if method == "reverse":
             return 1 / (1 + from_node_val ** 2)
         
@@ -229,8 +229,8 @@ class Rules():
             NotImplemented
             
     @staticmethod        
-    def abs(method : str, extra_param : any) -> int:
-        from_node_val = extra_param[0]
+    def abs(method : str, extra_param : list[float]) -> float:
+        from_node_val = extra_param[2]
         if method == "reverse":
             if from_node_val == 0:
                 # division 0 with 0
