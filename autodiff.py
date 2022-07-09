@@ -1,13 +1,21 @@
+from copy import deepcopy
 from expression import Expression
-from evaluate import np
+from evaluate import Evaluate, np
 
 class AutoDiff:
+    @classmethod
+    def __copyGraph(cls, list : list):
+        # create a new copy of the computation graph before calcualting the partial derivatives
+        list_copy = deepcopy(list)
+        return list_copy
+        
+ 
     @classmethod
     def __forwardPass(cls, list_input : list[Expression]) -> np.ndarray:
         NotImplemented
     
     @classmethod
-    def __backwardPass(cls, list_output : list[Expression], list_input_val : list[tuple[Expression, float]]) -> np.ndarray:
+    def __backwardPass(cls, list_input_val : list[tuple[Expression, float]]) -> np.ndarray:
         """Find all output partial derivatives using backward auto diff
 
         Args:
@@ -16,7 +24,9 @@ class AutoDiff:
         Returns:
             np.ndarray: Partial Derivatives of all output
         """
-        def doForwardPass():
+        def doForwardPass() -> list[Expression]:
+            list_output = []
+            
             # in conn, 0 = from, 1 = to
             # Do Forward Pass to get the value for each node
             # pick the first node to explore 
@@ -29,7 +39,9 @@ class AutoDiff:
                 
                 while len(stack) != 0:
                     node, conn_idx = stack[-1]
-                      
+                    if len(node.conn[1]) == 0:
+                        list_output.append(node) # output node doesn't have to conncetion
+                    
                     if conn_idx < len(node.conn[1]):
                         node = node.conn[1][conn_idx] # visit the node
                         
@@ -65,11 +77,44 @@ class AutoDiff:
                                 
                     else:
                         del stack[-1]
-                                
-
-                                
-        doForwardPass()
-        print(list_output[0].val)
+                        
+            return list_output
+        
+        def findDerivatives():
+            # start from the output node, set the value of the partial to one
+            stack : list[Expression]  = []
+            extra_param = [0, 0, 0, 0, 0]
+            
+            for out_node in list_output:
+                out_node.partialValue = 1
+                stack.append(out_node)
+                while len(stack) > 0:
+                    node = stack.pop()
+                    
+                    for i in range(len(node.conn[0])):
+                        from_node = node.conn[0][i]
+                        extra_param[0] = i
+                        extra_param[1] = node.val
+                        for i in range(len(node.conn[0])):
+                            extra_param[2 + i] = node.conn[0][i].val
+                        
+                        extra_param[-1] = node.param if node.param else 0
+                        
+                        # use chain rule to find the partial value 
+                        from_node.partialValue += node.partialValue * node.derivativeRules("reverse", extra_param)
+                        
+                        # append to stack to be search later
+                        stack.append(from_node)
+                        
+            # read the output
+            partial_derivatives = np.array([])
+            for i in range(len(list_input_val)):
+                partial_derivatives = np.append(partial_derivatives, list_input_val[i][0].partialValue)
+                
+            return partial_derivatives
+                        
+        list_output = doForwardPass()
+        return findDerivatives()
                           
         
     @classmethod
@@ -89,16 +134,18 @@ class AutoDiff:
     
         if method == None and len(list_input_val) < len(list_output) or method == "forward":
             # Do a forward auto diff
-            cls.__forwardPass(list_input_val)
+            der = cls.__forwardPass(list_input_val)
             
         elif method == None and len(list_input_val) >= len(list_output) or method == "reverse":
+            list_input_val_copy = cls.__copyGraph(list_input_val)
             # do a reverse auto diff
-            cls.__backwardPass(list_output, list_input_val)
+            der = cls.__backwardPass(list_input_val_copy)
             
         else:
             # throw an error, method isn't recognized
             NotImplemented
             
+        return der
         
         
         
