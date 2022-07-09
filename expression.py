@@ -3,12 +3,13 @@
 from evaluate import Rules, Evaluate
 
 class Expression:
-    def __init__(self, operation_id : int, connection : list[list["Expression"]], dRules : "function" = None, evalFunc  : "function" = None, value : float = None, extra_param : float = None) -> None:
+    def __init__(self, operation_id : int, connection : list[list["Expression"]], dRules : "function" = None, evalFunc  : "function" = None, value : float = None, partial : float = 0, extra_param : float = None) -> None:
         # connection is a 2D array. 0th index = From and 1th index = To
         # Extra param only accessed by a specific function such as power and general logartihm and exponent
         self.op = operation_id
         self.conn = connection
         self.val = value # used when calculating the partial derivatives
+        self.partialValue = partial # used to store the parital derivatives of the node
         self.param = extra_param
         self.derivativeRules = dRules # used to calculate the derivatives
         self.eval = evalFunc # used to evaluate the node value
