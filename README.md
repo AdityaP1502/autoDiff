@@ -1,5 +1,5 @@
 # autoDiff
-autoDiff implementation in python
+autoDiff implementation in python using operator overloading
 
 # WIP : 
 1. Forward AutoDiff
